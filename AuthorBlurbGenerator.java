@@ -1,38 +1,75 @@
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 
-public class AuthorBlurbGenerator
+public class AuthorBlurbGenerator extends JFrame
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final Properties configuration = new Properties();
+	private JTextArea textarea;
 	
 	public AuthorBlurbGenerator() throws IOException
 	{
+		super("Author Blurb");
+		
+		// read configuration
 		InputStream in = null;
 		try
 		{
-			in = new FileInputStream("config/config.properties");
+			File jarPath=new File(AuthorBlurbGenerator.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	        String propertiesPath=jarPath.getParentFile().getAbsolutePath();
+			in = new FileInputStream(propertiesPath + "/config/config.properties");
 			configuration.load(in);
 		}
 		finally
 		{
 			in.close();
 		}
+		
+		// prepare text area
+		textarea = new JTextArea();
+		textarea.setLineWrap(true);
+		textarea.setWrapStyleWord(true);
+		Font font = new Font(Font.SERIF, Font.ROMAN_BASELINE, 18);
+		textarea.setFont(font);
+		this.add(textarea, BorderLayout.CENTER);
+		
+		// set window behaviour
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setSize(800, 200);
+		
+		// add repeat button
+		JButton repeat = new JButton("Noch einmal");
+		repeat.addActionListener(new RepeatButtonListener(this));
+		this.add(repeat, BorderLayout.SOUTH);
 	}
 	
 	public static final void main(String[]args) throws IOException
 	{
 		AuthorBlurbGenerator abg = new AuthorBlurbGenerator();
-		System.out.println(abg.fillWithText());
+		abg.fillWithText();
+		abg.setVisible(true);
 	}
 	
-	private String fillWithText()
+	public void fillWithText()
 	{
 		StringBuffer sb = new StringBuffer();
 		replaceVars(sb, configuration.getProperty("authorBlurbTemplate"));
-		return sb.toString();
+		textarea.setText(sb.toString());
 	}
 	
 	private void replaceVars(StringBuffer resultBuffer, String unprocessedText)
@@ -62,6 +99,23 @@ public class AuthorBlurbGenerator
 		else
 		{
 			resultBuffer.append(unprocessedText);
+		}
+	}
+	
+	class RepeatButtonListener implements ActionListener
+	{
+		private AuthorBlurbGenerator abg;
+		
+		RepeatButtonListener(AuthorBlurbGenerator abg)
+		{
+			this.abg = abg;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent evt)
+		{
+			abg.fillWithText();
+			abg.repaint();
 		}
 	}
 }
