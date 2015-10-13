@@ -1,3 +1,11 @@
+/*
+ * Main class of AuthorBlurbGenerator
+ * (c) 2015 by Kai Weber
+ * published under the GNU GENERAL PUBLIC LICENSE
+ * (see separate license document)
+ */
+package abg;
+
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -8,10 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+
+import abg.Utilities;
 
 public class AuthorBlurbGenerator extends JFrame
 {
@@ -22,7 +33,7 @@ public class AuthorBlurbGenerator extends JFrame
 	final Properties configuration = new Properties();
 	private JTextArea textarea;
 	
-	public AuthorBlurbGenerator() throws IOException
+	public AuthorBlurbGenerator()
 	{
 		super("Author Blurb");
 		
@@ -35,9 +46,13 @@ public class AuthorBlurbGenerator extends JFrame
 			in = new FileInputStream(propertiesPath + "/config/config.properties");
 			configuration.load(in);
 		}
+		catch(IOException e)
+		{
+			Utilities.showErrorPane("Error when trying to open configuration file!", e);
+		}
 		finally
 		{
-			in.close();
+			Utilities.safeClose(in);
 		}
 		
 		// prepare text area
@@ -84,10 +99,15 @@ public class AuthorBlurbGenerator extends JFrame
 			String variable = unprocessedText.substring(varStart + 2, varEnd);
 			
 			// take the variable value from the configuration file
-			String[] replacementOptions = configuration.getProperty(variable).split(",");
+			String variableContent = configuration.getProperty(variable);
+			if(variableContent == null)
+			{
+				Utilities.showErrorPane("No variable values found for template variable {$" + variable + "}", new IllegalArgumentException());
+			}
+			String[] replacementOptions = variableContent.split(",");
 			if(replacementOptions == null)
 			{
-				throw new IllegalArgumentException("Error creating text from template. Variable " + variable + " missing!");
+				Utilities.showErrorPane("Error parsing template variable " + variable, new IllegalArgumentException());
 			}
 			else
 			{
