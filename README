@@ -1,0 +1,20 @@
+The AuthorBlurbGenerator is a funny (?) little toy that some people working in the book industry might enjoy.
+Based on a configuration file and some pseudo-randomness it generates promo texts about writers in a style similar as the one used by professional publishing houses. With the current German configuration file, you might end up with something like this:
+
+**************
+Alu Šklovskaja wurde 753 v. Chr. in einem Bergsteigerzelt auf dem Kilimandscharo geboren. Mit Klageliedern über Propellerflugzeuge eroberte sie oder er eine exquisite Fangemeinde und wurde zurück in der Zukunft mit „The Big Lewanstki“ für den Pervitinküchen-Chefkochtitel 2013 nominiert. Die Autorin oder der Autor lebt in einer Tonne welche früher von Diogenes von Sinope bewohnt worden war!
+**************
+
+The AuthorBlurbGenerator is written in Java. It expects a "config" folder with a "config.properties" file in the main classes directory.
+
+The configuration works as follows:
+
+The "config.properties" file can be edited prior to starting the application to influence the program's blurb generation. Mind the following notes:
+1) Every line must contain a key-value pair separated by an equal sign: key=value
+2) The file must contain a key named "authorBlurbTemplate". This key's value contains the base text, that is used by the AuthorBlurbGenerator.
+3) Within thie base text variables can be inserted. A variable is enclosed by {$...}.
+4) For every variable contained in the template text there must be one line defining the variable. If the authorBlurbTemplate contains e.g. a variable called {$periwinkle} then the program will look for a definition like periwinkle=little flower.
+5) In the values section a comma-separated list of values can be given. In such cases the pseudo-random generator will choose one of the values.
+6) The character encoding of the file must be ANSI / ISO-8859-1.
+7) Characters that are not contained in the ISO-8859-1 set can be represented as a unicode escape sequence. Google for a unicode table and look for the hexadecimal codes. Insert this code in the following fashion: \uXXX, e.g. \u201E.
+8) Keys are case sensitive.
