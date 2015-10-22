@@ -26,9 +26,6 @@ import abg.Utilities;
 
 public class AuthorBlurbGenerator extends JFrame
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	final Properties configuration = new Properties();
 	private JTextArea textarea;
@@ -43,7 +40,7 @@ public class AuthorBlurbGenerator extends JFrame
 		{
 			File jarPath=new File(AuthorBlurbGenerator.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	        String propertiesPath=jarPath.getParentFile().getAbsolutePath();
-			in = new FileInputStream(propertiesPath + "/config/config.properties");
+	        in = new FileInputStream(propertiesPath.replaceAll("%20", " ") + "/config/config.properties");
 			configuration.load(in);
 		}
 		catch(IOException e)
@@ -73,7 +70,7 @@ public class AuthorBlurbGenerator extends JFrame
 		this.add(repeat, BorderLayout.SOUTH);
 	}
 	
-	public static final void main(String[]args) throws IOException
+	public static void main(String[] args)
 	{
 		AuthorBlurbGenerator abg = new AuthorBlurbGenerator();
 		abg.fillWithText();
